@@ -14,27 +14,5 @@ class SignInActivity : AppCompatActivity() {
         textSignUp.setOnClickListener {
             startActivity(Intent(applicationContext, SignUpActivity::class.java))
         }
-
-//        val database = FirebaseFirestore.getInstance()
-//        val user = HashMap<String, Any>()
-//        user["first_name"] = "Iddan"
-//        user["last_name"] = "Gunawan"
-//        user["email"] = "iddandunk@gmail.com"
-//        database.collection("users")
-//            .add(user)
-//            .addOnSuccessListener { documentReference ->
-//                Toast.makeText(
-//                    this,
-//                    "User inserted",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-//            .addOnFailureListener { e ->
-//                Toast.makeText(
-//                    this,
-//                    "Error add user",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
     }
 }

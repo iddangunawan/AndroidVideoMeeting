@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "390093179453",
+    "firebase_url": "https://video-meeting-30c6d.firebaseio.com",
+    "project_id": "video-meeting-30c6d",
+    "storage_bucket": "video-meeting-30c6d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390093179453:android:8cb3b32d98f2f02b9ab854",
+        "android_client_info": {
+          "package_name": "com.mylektop.videomeeting"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "390093179453-lvm8poed2ajmoi0t50r8aud2kc8uimqk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbKsB_3rxtlvUwUsMabda4uuButQxMJ7s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "390093179453-lvm8poed2ajmoi0t50r8aud2kc8uimqk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

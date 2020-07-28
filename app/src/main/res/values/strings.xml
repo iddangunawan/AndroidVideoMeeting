@@ -17,4 +17,5 @@
     <string name="last_name_hint">Suradep</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="already_have_ana_account">Already have ana account?</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

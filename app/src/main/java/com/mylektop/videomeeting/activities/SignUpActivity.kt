@@ -63,8 +63,9 @@ class SignUpActivity : AppCompatActivity() {
         user[Constants.KEY_PASSWORD] = inputPassword.text.toString()
         database.collection(Constants.KEY_COLLECTION_USERS)
             .add(user)
-            .addOnSuccessListener {
+            .addOnSuccessListener { documentReference ->
                 preferenceManager?.putBoolean(Constants.KEY_IS_SIGNED_IN, true)
+                preferenceManager?.putString(Constants.KEY_USER_ID, documentReference.id)
                 preferenceManager?.putString(Constants.KEY_FIRST_NAME, inputFirstName.text.toString())
                 preferenceManager?.putString(Constants.KEY_LAST_NAME, inputLastName.text.toString())
                 preferenceManager?.putString(Constants.KEY_EMAIL, inputEmail.text.toString())

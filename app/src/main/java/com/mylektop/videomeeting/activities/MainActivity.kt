@@ -2,12 +2,16 @@ package com.mylektop.videomeeting.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.iid.FirebaseInstanceId
 import com.mylektop.videomeeting.R
+import com.mylektop.videomeeting.adapters.UsersAdapter
+import com.mylektop.videomeeting.models.User
 import com.mylektop.videomeeting.utilities.Constants
 import com.mylektop.videomeeting.utilities.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,6 +19,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var preferenceManager: PreferenceManager? = null
+    private var users: ArrayList<User>? = null
+    private var userAdapter: UsersAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,9 +40,16 @@ class MainActivity : AppCompatActivity() {
 
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
             if (task.isSuccessful && task.result != null) {
-                sendFCMTokenToDatabase(task.result?.token!!)
+                sendFCMTokenToDatabase(task.result!!.token)
             }
         }
+
+        users = ArrayList()
+        userAdapter = UsersAdapter(users!!)
+
+        recyclerViewUsers.adapter = userAdapter
+
+        getUsers()
     }
 
     private fun sendFCMTokenToDatabase(token: String) {
@@ -44,12 +57,8 @@ class MainActivity : AppCompatActivity() {
         val documentReference = database.collection(Constants.KEY_COLLECTION_USERS)
             .document(preferenceManager?.getString(Constants.KEY_USER_ID)!!)
         documentReference.update(Constants.KEY_FCM_TOKEN, token)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Token update successfully", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Unable to send token: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+            .addOnFailureListener { e -> Toast.makeText(this, "Unable to send token: ${e.message}", Toast.LENGTH_SHORT).show() }
+//            .addOnSuccessListener { Toast.makeText(this, "Token update successfully", Toast.LENGTH_SHORT).show() }
     }
 
     private fun signOut() {
@@ -68,6 +77,42 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Unable to sign out: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun getUsers() {
+        usersProgressBar.visibility = View.VISIBLE
+        val database = FirebaseFirestore.getInstance()
+        database.collection(Constants.KEY_COLLECTION_USERS)
+            .get()
+            .addOnCompleteListener { task ->
+                usersProgressBar.visibility = View.GONE
+                val myUserId = preferenceManager?.getString(Constants.KEY_USER_ID)
+                if (task.isSuccessful && task.result != null) {
+                    for (documentSnapshot: QueryDocumentSnapshot in task.result!!) {
+                        if (myUserId.equals(documentSnapshot.id)) {
+                            continue
+                        }
+
+                        val user = User()
+                        user.firstName = documentSnapshot.getString(Constants.KEY_FIRST_NAME).toString()
+                        user.lastName = documentSnapshot.getString(Constants.KEY_LAST_NAME).toString()
+                        user.email = documentSnapshot.getString(Constants.KEY_EMAIL).toString()
+                        user.token = documentSnapshot.getString(Constants.KEY_FCM_TOKEN).toString()
+
+                        users?.add(user)
+                    }
+
+                    if (users?.size!! > 0) {
+                        userAdapter?.notifyDataSetChanged()
+                    } else {
+                        textErrorMessage.text = String.format("%s", "No Users available")
+                        textErrorMessage.visibility = View.VISIBLE
+                    }
+                } else {
+                    textErrorMessage.text = String.format("%s", "No Users available")
+                    textErrorMessage.visibility = View.VISIBLE
+                }
             }
     }
 }

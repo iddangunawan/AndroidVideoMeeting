@@ -11,12 +11,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.iid.FirebaseInstanceId
 import com.mylektop.videomeeting.R
 import com.mylektop.videomeeting.adapters.UsersAdapter
+import com.mylektop.videomeeting.lisneters.UsersListener
 import com.mylektop.videomeeting.models.User
 import com.mylektop.videomeeting.utilities.Constants
 import com.mylektop.videomeeting.utilities.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), UsersListener {
 
     private var preferenceManager: PreferenceManager? = null
     private var users: ArrayList<User>? = null
@@ -45,9 +46,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         users = ArrayList()
-        userAdapter = UsersAdapter(users!!)
-
+        userAdapter = UsersAdapter(users!!, this)
         recyclerViewUsers.adapter = userAdapter
+
+        swipeRefreshLayout.setOnRefreshListener(this::getUsers)
 
         getUsers()
     }
@@ -81,24 +83,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUsers() {
-        usersProgressBar.visibility = View.VISIBLE
+        swipeRefreshLayout.isRefreshing = true
         val database = FirebaseFirestore.getInstance()
         database.collection(Constants.KEY_COLLECTION_USERS)
             .get()
             .addOnCompleteListener { task ->
-                usersProgressBar.visibility = View.GONE
+                swipeRefreshLayout.isRefreshing = false
                 val myUserId = preferenceManager?.getString(Constants.KEY_USER_ID)
                 if (task.isSuccessful && task.result != null) {
+                    users?.clear()
                     for (documentSnapshot: QueryDocumentSnapshot in task.result!!) {
                         if (myUserId.equals(documentSnapshot.id)) {
                             continue
                         }
 
                         val user = User()
-                        user.firstName = documentSnapshot.getString(Constants.KEY_FIRST_NAME).toString()
-                        user.lastName = documentSnapshot.getString(Constants.KEY_LAST_NAME).toString()
-                        user.email = documentSnapshot.getString(Constants.KEY_EMAIL).toString()
-                        user.token = documentSnapshot.getString(Constants.KEY_FCM_TOKEN).toString()
+                        user.firstName = documentSnapshot.getString(Constants.KEY_FIRST_NAME)
+                        user.lastName = documentSnapshot.getString(Constants.KEY_LAST_NAME)
+                        user.email = documentSnapshot.getString(Constants.KEY_EMAIL)
+                        user.token = documentSnapshot.getString(Constants.KEY_FCM_TOKEN)
 
                         users?.add(user)
                     }
@@ -114,5 +117,21 @@ class MainActivity : AppCompatActivity() {
                     textErrorMessage.visibility = View.VISIBLE
                 }
             }
+    }
+
+    override fun initiateAudioMeeting(user: User) {
+        if (user.token == null || user.token?.trim()?.isEmpty()!!) {
+            Toast.makeText(this, "${user.firstName} ${user.lastName} is not available for meeting", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Audio meeting with ${user.firstName} ${user.lastName}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun initiateVideoMeeting(user: User) {
+        if (user.token == null || user.token?.trim()?.isEmpty()!!) {
+            Toast.makeText(this, "${user.firstName} ${user.lastName} is not available for meeting", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Video meeting with ${user.firstName} ${user.lastName}", Toast.LENGTH_SHORT).show()
+        }
     }
 }

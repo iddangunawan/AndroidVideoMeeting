@@ -7,12 +7,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mylektop.videomeeting.R
+import com.mylektop.videomeeting.lisneters.UsersListener
 import com.mylektop.videomeeting.models.User
 
 /**
  * Created by iddangunawan on 30/07/20
  */
-class UsersAdapter(private var users: List<User>) : RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
+class UsersAdapter(
+    private var users: List<User>,
+    private val usersListener: UsersListener
+) : RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         return UserViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_container_user, parent, false))
@@ -23,7 +27,7 @@ class UsersAdapter(private var users: List<User>) : RecyclerView.Adapter<UsersAd
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.setUserData(users[position])
+        holder.setUserData(users[position], usersListener)
     }
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView.rootView) {
@@ -33,10 +37,18 @@ class UsersAdapter(private var users: List<User>) : RecyclerView.Adapter<UsersAd
         private val imageAudioMeeting = itemView.findViewById<ImageView>(R.id.imageAudioMeeting)
         private val imageVideoMeeting = itemView.findViewById<ImageView>(R.id.imageVideoMeeting)
 
-        fun setUserData(user: User) {
-            textFirstChar.text = user.firstName.substring(0, 1)
+        fun setUserData(user: User, usersListener: UsersListener) {
+            textFirstChar.text = user.firstName?.substring(0, 1)
             textUserName.text = String.format("%s %s", user.firstName, user.lastName)
             textEmail.text = user.email
+
+            imageAudioMeeting.setOnClickListener {
+                usersListener.initiateAudioMeeting(user)
+            }
+
+            imageVideoMeeting.setOnClickListener {
+                usersListener.initiateVideoMeeting(user)
+            }
         }
     }
 }

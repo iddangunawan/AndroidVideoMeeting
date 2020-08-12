@@ -6,8 +6,8 @@ import java.io.Serializable
  * Created by iddangunawan on 30/07/20
  */
 class User : Serializable {
-    var firstName: String = ""
-    var lastName: String = ""
-    var email: String = ""
-    var token: String = ""
+    var firstName: String? = null
+    var lastName: String? = null
+    var email: String? = null
+    var token: String? = null
 }

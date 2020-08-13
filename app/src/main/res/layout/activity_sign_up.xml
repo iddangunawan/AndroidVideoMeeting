@@ -24,7 +24,7 @@
             android:layout_height="@dimen/_25sdp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_back"
-            android:tint="@color/colorTextIcon" />
+            app:tint="@color/colorTextIcons" />
 
         <TextView
             android:layout_width="match_parent"
@@ -33,7 +33,7 @@
             android:fontFamily="@font/ubuntu_bold"
             android:includeFontPadding="false"
             android:text="@string/sign_up"
-            android:textColor="@color/colorTextIcon"
+            android:textColor="@color/colorTextIcons"
             android:textSize="@dimen/_16ssp" />
 
     </LinearLayout>
@@ -238,7 +238,7 @@
                     android:fontFamily="@font/ubuntu_bold"
                     android:includeFontPadding="false"
                     android:text="@string/sign_up"
-                    android:textColor="@color/colorTextIcon"
+                    android:textColor="@color/colorTextIcons"
                     android:textSize="@dimen/_12ssp" />
 
                 <ProgressBar

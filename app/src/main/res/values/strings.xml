@@ -18,4 +18,6 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="already_have_ana_account">Already have ana account?</string>
     <string name="sign_out">Sign Out</string>
+    <string name="incoming_meeting_invitation">Incoming Meeting Invitation</string>
+    <string name="sending_meeting_invitation">Sending Meeting Invitation</string>
 </resources>

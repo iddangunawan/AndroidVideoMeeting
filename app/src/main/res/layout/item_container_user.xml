@@ -15,7 +15,7 @@
         android:gravity="center"
         android:includeFontPadding="false"
         android:textAllCaps="true"
-        android:textColor="@color/colorTextIcon"
+        android:textColor="@color/colorTextIcons"
         android:textSize="@dimen/_22ssp"
         app:layout_constraintBottom_toTopOf="@id/viewDivider"
         app:layout_constraintStart_toStartOf="parent"

@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), UsersListener {
 
-    private var preferenceManager: PreferenceManager? = null
+    private lateinit var preferenceManager: PreferenceManager
     private var users: ArrayList<User>? = null
     private var userAdapter: UsersAdapter? = null
 
@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity(), UsersListener {
 
         textTitle.text = String.format(
             "%s %s",
-            preferenceManager?.getString(Constants.KEY_FIRST_NAME),
-            preferenceManager?.getString(Constants.KEY_LAST_NAME)
+            preferenceManager.getString(Constants.KEY_FIRST_NAME),
+            preferenceManager.getString(Constants.KEY_LAST_NAME)
         )
 
         textSignOut.setOnClickListener {
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), UsersListener {
     private fun sendFCMTokenToDatabase(token: String) {
         val database = FirebaseFirestore.getInstance()
         val documentReference = database.collection(Constants.KEY_COLLECTION_USERS)
-            .document(preferenceManager?.getString(Constants.KEY_USER_ID)!!)
+            .document(preferenceManager.getString(Constants.KEY_USER_ID))
         documentReference.update(Constants.KEY_FCM_TOKEN, token)
             .addOnFailureListener { e -> Toast.makeText(this, "Unable to send token: ${e.message}", Toast.LENGTH_SHORT).show() }
 //            .addOnSuccessListener { Toast.makeText(this, "Token update successfully", Toast.LENGTH_SHORT).show() }
@@ -68,12 +68,12 @@ class MainActivity : AppCompatActivity(), UsersListener {
 
         val database = FirebaseFirestore.getInstance()
         val documentReference = database.collection(Constants.KEY_COLLECTION_USERS)
-            .document(preferenceManager?.getString(Constants.KEY_USER_ID)!!)
+            .document(preferenceManager.getString(Constants.KEY_USER_ID))
         val updates = HashMap<String, Any>()
         updates[Constants.KEY_FCM_TOKEN] = FieldValue.delete()
         documentReference.update(updates)
             .addOnSuccessListener {
-                preferenceManager?.clearPreferences()
+                preferenceManager.clearPreferences()
                 startActivity(Intent(this, SignInActivity::class.java))
                 finish()
             }
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), UsersListener {
             .get()
             .addOnCompleteListener { task ->
                 swipeRefreshLayout.isRefreshing = false
-                val myUserId = preferenceManager?.getString(Constants.KEY_USER_ID)
+                val myUserId = preferenceManager.getString(Constants.KEY_USER_ID)
                 if (task.isSuccessful && task.result != null) {
                     users?.clear()
                     for (documentSnapshot: QueryDocumentSnapshot in task.result!!) {

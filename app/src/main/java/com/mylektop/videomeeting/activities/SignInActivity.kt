@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class SignInActivity : AppCompatActivity() {
 
-    private var preferenceManager: PreferenceManager? = null
+    private lateinit var preferenceManager: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +22,7 @@ class SignInActivity : AppCompatActivity() {
 
         preferenceManager = PreferenceManager(applicationContext)
 
-        if (preferenceManager?.getBoolean(Constants.KEY_IS_SIGNED_IN)!!) {
+        if (preferenceManager.getBoolean(Constants.KEY_IS_SIGNED_IN)) {
             val intent = Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -57,11 +57,11 @@ class SignInActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful && task.result != null && task.result!!.documents.size > 0) {
                     val documentSnapshot = task.result!!.documents[0]
-                    preferenceManager?.putBoolean(Constants.KEY_IS_SIGNED_IN, true)
-                    preferenceManager?.putString(Constants.KEY_USER_ID, documentSnapshot.id)
-                    preferenceManager?.putString(Constants.KEY_FIRST_NAME, documentSnapshot.getString(Constants.KEY_FIRST_NAME)!!)
-                    preferenceManager?.putString(Constants.KEY_LAST_NAME, documentSnapshot.getString(Constants.KEY_LAST_NAME)!!)
-                    preferenceManager?.putString(Constants.KEY_EMAIL, documentSnapshot.getString(Constants.KEY_EMAIL)!!)
+                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true)
+                    preferenceManager.putString(Constants.KEY_USER_ID, documentSnapshot.id)
+                    preferenceManager.putString(Constants.KEY_FIRST_NAME, documentSnapshot.getString(Constants.KEY_FIRST_NAME)!!)
+                    preferenceManager.putString(Constants.KEY_LAST_NAME, documentSnapshot.getString(Constants.KEY_LAST_NAME)!!)
+                    preferenceManager.putString(Constants.KEY_EMAIL, documentSnapshot.getString(Constants.KEY_EMAIL)!!)
 
                     val intent = Intent(applicationContext, MainActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

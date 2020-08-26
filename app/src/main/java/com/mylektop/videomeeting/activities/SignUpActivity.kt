@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_sign_up.*
 
 class SignUpActivity : AppCompatActivity() {
 
-    private var preferenceManager: PreferenceManager? = null
+    private lateinit var preferenceManager: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +64,11 @@ class SignUpActivity : AppCompatActivity() {
         database.collection(Constants.KEY_COLLECTION_USERS)
             .add(user)
             .addOnSuccessListener { documentReference ->
-                preferenceManager?.putBoolean(Constants.KEY_IS_SIGNED_IN, true)
-                preferenceManager?.putString(Constants.KEY_USER_ID, documentReference.id)
-                preferenceManager?.putString(Constants.KEY_FIRST_NAME, inputFirstName.text.toString())
-                preferenceManager?.putString(Constants.KEY_LAST_NAME, inputLastName.text.toString())
-                preferenceManager?.putString(Constants.KEY_EMAIL, inputEmail.text.toString())
+                preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true)
+                preferenceManager.putString(Constants.KEY_USER_ID, documentReference.id)
+                preferenceManager.putString(Constants.KEY_FIRST_NAME, inputFirstName.text.toString())
+                preferenceManager.putString(Constants.KEY_LAST_NAME, inputLastName.text.toString())
+                preferenceManager.putString(Constants.KEY_EMAIL, inputEmail.text.toString())
 
                 val intent = Intent(applicationContext, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

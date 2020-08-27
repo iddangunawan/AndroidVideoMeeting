@@ -30,6 +30,8 @@ object Constants {
     const val REMOTE_MSG_INVITATION_REJECTED: String = "rejected"
     const val REMOTE_MSG_INVITATION_CANCELLED: String = "cancelled"
 
+    const val REMOTE_MSG_MEETING_ROOM: String = "meetingRoom"
+
     fun getRemoteMessageHeaders(): HashMap<String, String> {
         val headers: HashMap<String, String> = HashMap()
         headers[REMOTE_MSG_AUTHORIZATION] = "key=AAAAWtNdij0:APA91bH13VJRlA42sj3YBw7iF6VI_en1B0lF9xyuTjUoFnmpALtiL83Nzmu_3Ic2giXiH82sJ0Lb_YoYKhh3ch3WBvqz1yaHVKX1VyA85Vv20GUGJdZQpjRLQkTwQT0ofwL9aU3jy4N1"

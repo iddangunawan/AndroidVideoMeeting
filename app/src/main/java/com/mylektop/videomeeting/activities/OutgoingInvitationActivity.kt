@@ -16,16 +16,21 @@ import com.mylektop.videomeeting.network.ApiService
 import com.mylektop.videomeeting.utilities.Constants
 import com.mylektop.videomeeting.utilities.PreferenceManager
 import kotlinx.android.synthetic.main.activity_outgoing_invitation.*
+import org.jitsi.meet.sdk.JitsiMeetActivity
+import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.URL
+import java.util.*
 
 class OutgoingInvitationActivity : AppCompatActivity() {
 
     private lateinit var preferenceManager: PreferenceManager
     private var inviterToken: String? = null
+    var meetingRoom: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +85,9 @@ class OutgoingInvitationActivity : AppCompatActivity() {
             data.put(Constants.KEY_LAST_NAME, preferenceManager.getString(Constants.KEY_LAST_NAME))
             data.put(Constants.KEY_EMAIL, preferenceManager.getString(Constants.KEY_EMAIL))
             data.put(Constants.REMOTE_MSG_INVITER_TOKEN, inviterToken)
+
+            meetingRoom = preferenceManager.getString(Constants.KEY_USER_ID) + "_" + UUID.randomUUID().toString().substring(0, 5)
+            data.put(Constants.REMOTE_MSG_MEETING_ROOM, meetingRoom)
 
             body.put(Constants.REMOTE_MSG_DATA, data)
             body.put(Constants.REMOTE_MSG_REGISTRATION_IDS, tokens)
@@ -142,7 +150,19 @@ class OutgoingInvitationActivity : AppCompatActivity() {
 
             if (type != null) {
                 if (type == Constants.REMOTE_MSG_INVITATION_ACCEPTED) {
-                    Toast.makeText(context, "Invitation Accepted", Toast.LENGTH_SHORT).show()
+                    try {
+                        val serverURL = URL("https://meet.jit.si")
+                        val conferenceOptions = JitsiMeetConferenceOptions.Builder()
+                            .setServerURL(serverURL)
+                            .setWelcomePageEnabled(false)
+                            .setRoom(meetingRoom)
+                            .build()
+                        JitsiMeetActivity.launch(this@OutgoingInvitationActivity, conferenceOptions)
+                        finish()
+                    } catch (e: Exception) {
+                        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
                 } else if (type == Constants.REMOTE_MSG_INVITATION_REJECTED) {
                     Toast.makeText(context, "Invitation Rejected", Toast.LENGTH_SHORT).show()
                     finish()

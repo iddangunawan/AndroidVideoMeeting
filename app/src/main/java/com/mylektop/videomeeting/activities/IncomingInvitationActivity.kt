@@ -13,11 +13,14 @@ import com.mylektop.videomeeting.network.ApiClient
 import com.mylektop.videomeeting.network.ApiService
 import com.mylektop.videomeeting.utilities.Constants
 import kotlinx.android.synthetic.main.activity_incoming_invitation.*
+import org.jitsi.meet.sdk.JitsiMeetActivity
+import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.URL
 
 class IncomingInvitationActivity : AppCompatActivity() {
 
@@ -86,14 +89,27 @@ class IncomingInvitationActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
                         if (type == Constants.REMOTE_MSG_INVITATION_ACCEPTED) {
-                            Toast.makeText(this@IncomingInvitationActivity, "Invitation Accepted", Toast.LENGTH_SHORT).show()
+                            try {
+                                val serverURL = URL("https://meet.jit.si")
+                                val conferenceOptions = JitsiMeetConferenceOptions.Builder()
+                                    .setServerURL(serverURL)
+                                    .setWelcomePageEnabled(false)
+                                    .setRoom(intent.getStringExtra(Constants.REMOTE_MSG_MEETING_ROOM))
+                                    .build()
+                                JitsiMeetActivity.launch(this@IncomingInvitationActivity, conferenceOptions)
+                                finish()
+                            } catch (e: Exception) {
+                                Toast.makeText(this@IncomingInvitationActivity, e.message, Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
                         } else {
                             Toast.makeText(this@IncomingInvitationActivity, "Invitation Rejected", Toast.LENGTH_SHORT).show()
+                            finish()
                         }
                     } else {
                         Toast.makeText(this@IncomingInvitationActivity, response.message(), Toast.LENGTH_SHORT).show()
+                        finish()
                     }
-                    finish()
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {

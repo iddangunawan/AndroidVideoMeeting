@@ -11,4 +11,6 @@ interface UsersListener {
 
     fun initiateVideoMeeting(user: User)
 
+    fun onMultipleUsersAction(isMultipleUsersSelected: Boolean)
+
 }

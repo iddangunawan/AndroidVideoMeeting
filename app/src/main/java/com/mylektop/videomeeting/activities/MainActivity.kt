@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.gson.Gson
 import com.mylektop.videomeeting.R
 import com.mylektop.videomeeting.adapters.UsersAdapter
 import com.mylektop.videomeeting.lisneters.UsersListener
@@ -138,6 +139,21 @@ class MainActivity : AppCompatActivity(), UsersListener {
             intent.putExtra("user", user)
             intent.putExtra("type", "video")
             startActivity(intent)
+        }
+    }
+
+    override fun onMultipleUsersAction(isMultipleUsersSelected: Boolean) {
+        if (isMultipleUsersSelected) {
+            imageConference.visibility = View.VISIBLE
+            imageConference.setOnClickListener {
+                val intent = Intent(applicationContext, OutgoingInvitationActivity::class.java)
+                intent.putExtra("selectedUsers", Gson().toJson(userAdapter?.getSelectedUsers()))
+                intent.putExtra("type", "video")
+                intent.putExtra("isMultiple", true)
+                startActivity(intent)
+            }
+        } else {
+            imageConference.visibility = View.GONE
         }
     }
 }

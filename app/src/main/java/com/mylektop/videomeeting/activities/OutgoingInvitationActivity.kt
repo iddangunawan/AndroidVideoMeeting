@@ -30,7 +30,8 @@ class OutgoingInvitationActivity : AppCompatActivity() {
 
     private lateinit var preferenceManager: PreferenceManager
     private var inviterToken: String? = null
-    var meetingRoom: String? = null
+    private var meetingRoom: String? = null
+    private var meetingType: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +39,13 @@ class OutgoingInvitationActivity : AppCompatActivity() {
 
         preferenceManager = PreferenceManager(applicationContext)
 
-        val meetingType = intent.getStringExtra("type")
+        meetingType = intent.getStringExtra("type")
 
         if (meetingType != null) {
             if (meetingType == "video") {
                 imageMeetingType.setImageResource(R.drawable.ic_video)
+            } else {
+                imageMeetingType.setImageResource(R.drawable.ic_audio)
             }
         }
 
@@ -71,7 +74,7 @@ class OutgoingInvitationActivity : AppCompatActivity() {
         }
     }
 
-    private fun initiateMeeting(meetingType: String, receiverToken: String) {
+    private fun initiateMeeting(meetingType: String?, receiverToken: String) {
         try {
             val tokens = JSONArray()
             tokens.put(receiverToken)
@@ -152,12 +155,14 @@ class OutgoingInvitationActivity : AppCompatActivity() {
                 if (type == Constants.REMOTE_MSG_INVITATION_ACCEPTED) {
                     try {
                         val serverURL = URL("https://meet.jit.si")
-                        val conferenceOptions = JitsiMeetConferenceOptions.Builder()
-                            .setServerURL(serverURL)
-                            .setWelcomePageEnabled(false)
-                            .setRoom(meetingRoom)
-                            .build()
-                        JitsiMeetActivity.launch(this@OutgoingInvitationActivity, conferenceOptions)
+                        val builder = JitsiMeetConferenceOptions.Builder()
+                        builder.setServerURL(serverURL)
+                        builder.setWelcomePageEnabled(false)
+                        builder.setRoom(meetingRoom)
+                        if (meetingType.equals("audio")) {
+                            builder.setVideoMuted(true)
+                        }
+                        JitsiMeetActivity.launch(this@OutgoingInvitationActivity, builder.build())
                         finish()
                     } catch (e: Exception) {
                         Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()

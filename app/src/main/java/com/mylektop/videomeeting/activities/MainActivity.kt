@@ -123,7 +123,10 @@ class MainActivity : AppCompatActivity(), UsersListener {
         if (user.token == null || user.token?.trim()?.isEmpty()!!) {
             Toast.makeText(this, "${user.firstName} ${user.lastName} is not available for meeting", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Audio meeting with ${user.firstName} ${user.lastName}", Toast.LENGTH_SHORT).show()
+            val intent = Intent(applicationContext, OutgoingInvitationActivity::class.java)
+            intent.putExtra("user", user)
+            intent.putExtra("type", "audio")
+            startActivity(intent)
         }
     }
 

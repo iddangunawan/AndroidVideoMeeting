@@ -1,9 +1,13 @@
 package com.mylektop.videomeeting.activities
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,6 +23,10 @@ import com.mylektop.videomeeting.utilities.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), UsersListener {
+
+    companion object {
+        private const val REQUEST_CODE_BATTERY_OPTIMIZATION: Int = 1
+    }
 
     private lateinit var preferenceManager: PreferenceManager
     private var users: ArrayList<User>? = null
@@ -53,6 +61,7 @@ class MainActivity : AppCompatActivity(), UsersListener {
         swipeRefreshLayout.setOnRefreshListener(this::getUsers)
 
         getUsers()
+        checkForBatteryOptimizations()
     }
 
     private fun sendFCMTokenToDatabase(token: String) {
@@ -154,6 +163,32 @@ class MainActivity : AppCompatActivity(), UsersListener {
             }
         } else {
             imageConference.visibility = View.GONE
+        }
+    }
+
+    private fun checkForBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager: PowerManager = getSystemService(POWER_SERVICE) as PowerManager
+            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setTitle("Warning")
+                builder.setMessage("Battery optimization is enabled. It can interrupt running background services")
+                builder.setPositiveButton("Disabled") { dialog, which ->
+                    val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    startActivityForResult(intent, REQUEST_CODE_BATTERY_OPTIMIZATION)
+                }
+                builder.setNegativeButton("Cancel") { dialog, which ->
+                    dialog.dismiss()
+                }
+                builder.create().show()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_BATTERY_OPTIMIZATION) {
+            checkForBatteryOptimizations()
         }
     }
 }
